@@ -1,0 +1,60 @@
+version: '3'
+
+services:
+  # Container for Nginx
+  nginx:
+    # We need some configuration for Symfony
+    # Like where error log or access log will
+    # be stored
+    build: ./docker/nginx
+    environment:
+      - ENV=dev
+    # Need to keep files and logs
+    volumes:
+      - ./:/var/www/symfony/:cached
+    # Port 80 is already in use so I use 81
+    ports:
+      - 81:80
+
+  # Container for PHP
+  php:
+    # We need some configuration for Symfony
+    build: ./docker/php-fpm
+    environment:
+      - ENV=dev
+    # Need to keep files and logs
+    volumes:
+      - ./:/var/www/symfony/:cached
+    env_file:
+      - ./.env
+
+  # Postgres database
+  db:
+    image: postgres:11-alpine
+    environment:
+      POSTGRES_DB: sf5-db
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    # Using a volume to keep the data on the database
+    volumes:
+      - sf5_db_data:/var/lib/postgresql/data:cached
+    ports:
+      - 5432:5432
+
+  # To have an interface on Postgres
+  pgadmin:
+      image: dpage/pgadmin4
+      ports:
+          - 8080:80
+      links:
+          - db
+      environment:
+          PGADMIN_DEFAULT_EMAIL: root@root.com
+          PGADMIN_DEFAULT_PASSWORD: root
+      volumes:
+          - ./docker/pgadmin/servers.json:/pgadmin4/servers.json 
+
+# The volume for the database
+volumes:
+  sf5_db_data: {}
+

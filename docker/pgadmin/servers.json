@@ -1,0 +1,14 @@
+{
+    "Servers": {
+      "1": {
+        "Name": "sf5-db",
+        "Group": "Servers",
+        "Host": "host.docker.internal",
+        "Port": 5432,
+        "MaintenanceDB": "postgres",
+        "Username": "root",
+        "SSLMode": "prefer"
+      }
+    }
+  }
+  
